@@ -1,0 +1,29 @@
+1762231081: mosquitto version 2.0.22 starting
+1762231081: Config loaded from /mosquitto/config/mosquitto.conf.
+1762231081: Opening ipv4 listen socket on port 1883.
+1762231081: Opening ipv6 listen socket on port 1883.
+1762231081: mosquitto version 2.0.22 running
+1762231081: New connection from 172.18.0.4:38169 on port 1883.
+1762231081: New client connected from 172.18.0.4:38169 as auto-1630152A-5820-65B0-F6AC-0404D332FC84 (p2, c1, k60).
+1762231248: New connection from 151.101.0.223:28257 on port 1883.
+1762231248: New client connected from 151.101.0.223:28257 as auto-17348A58-0BFB-CD98-7A0F-3E59270517E9 (p2, c1, k60).
+1762231295: Client auto-17348A58-0BFB-CD98-7A0F-3E59270517E9 closed its connection.
+1762231318: New connection from 151.101.0.223:44686 on port 1883.
+1762231318: New client connected from 151.101.0.223:44686 as auto-1EA594BA-38CB-3535-2537-A92F19FC8119 (p2, c1, k60).
+1762231510: Client auto-1EA594BA-38CB-3535-2537-A92F19FC8119 closed its connection.
+1762231535: Client auto-1630152A-5820-65B0-F6AC-0404D332FC84 closed its connection.
+1762231535: mosquitto version 2.0.22 terminating
+1762231535: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1762231631: mosquitto version 2.0.22 starting
+1762231631: Config loaded from /mosquitto/config/mosquitto.conf.
+1762231631: Opening ipv4 listen socket on port 1883.
+1762231631: Opening ipv6 listen socket on port 1883.
+1762231631: mosquitto version 2.0.22 running
+1762231631: New connection from 172.18.0.4:38361 on port 1883.
+1762231631: New client connected from 172.18.0.4:38361 as auto-81616785-1111-36D2-D58B-B93F8CBF857F (p2, c1, k60).
+1762231901: New connection from 151.101.0.223:36530 on port 1883.
+1762231901: New client connected from 151.101.0.223:36530 as auto-1E819B33-10FF-21DD-CFFD-A07E37EFEB4F (p2, c1, k60).
+1762232298: Client auto-1E819B33-10FF-21DD-CFFD-A07E37EFEB4F closed its connection.
+1762232356: Client auto-81616785-1111-36D2-D58B-B93F8CBF857F closed its connection.
+1762232356: mosquitto version 2.0.22 terminating
+1762232356: Saving in-memory database to /mosquitto/data//mosquitto.db.

@@ -1,0 +1,23 @@
+# View all containers
+docker-compose ps
+
+# Start everything
+docker-compose up -d
+
+# Stop everything
+docker-compose down
+
+# View logs
+docker-compose logs -f
+
+# Run your MQTT test script
+source venv/bin/activate
+python3 test_mqtt.py
+
+# Access dashboard
+# http://127.0.0.1:8050
+
+# Check MongoDB data
+docker exec -it neurochair-db mongosh
+use neurochair
+db.sensor_data.find().limit(5)
