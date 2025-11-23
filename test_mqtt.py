@@ -3,7 +3,7 @@ import json
 import time
 import random
 
-client = mqtt.Client()
+client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 client.connect("localhost", 1883, 60)
 
 while True:
