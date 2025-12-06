@@ -7,7 +7,7 @@ COLORS = {'blue': '#4e79a7', 'orange': '#f28e2c', 'red': '#e15759', 'green': '#5
 
 def render_emergency_tab():
     return dbc.Container([
-        # Header
+        # Header with Emergency Status
         dbc.Row([
             dbc.Col([
                 html.H5("Emergency Alerts", style={'fontWeight': '600', 'color': COLORS['red']}),
