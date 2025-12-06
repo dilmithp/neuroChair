@@ -1,192 +1,165 @@
 from dash import html, dcc
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
-import plotly.express as px
 import pandas as pd
 from dash.dependencies import Input, Output
-from database import get_recent_sensor_data, get_historical_data
+from database import get_recent_sensor_data
 import datetime
+
+# Tableau Colors
+COLORS = {
+    'blue': '#4e79a7', 'orange': '#f28e2c', 'red': '#e15759',
+    'green': '#59a14f', 'teal': '#76b7b2', 'gray': '#79706e'
+}
+
+LAYOUT = {
+    'paper_bgcolor': 'white', 'plot_bgcolor': 'white',
+    'font': {'family': 'Helvetica Neue, Arial', 'size': 11, 'color': '#555'},
+    'margin': {'l': 40, 'r': 20, 't': 30, 'b': 30}
+}
 
 def render_end_user_tab():
     return dbc.Container([
+        # KPI Row
         dbc.Row([
-            # Top Left: Real-time Stress Gauge
-            dbc.Col([
-                dbc.Card([
-                    dbc.CardHeader("Real-time Stress Level"),
-                    dbc.CardBody([
-                        dcc.Graph(id='stress-gauge', style={'height': '250px'})
-                    ])
-                ], className="h-100")
-            ], width=6),
-            
-            # Top Right: Posture Status Card
-            dbc.Col([
-                dbc.Card([
-                    dbc.CardHeader("Current Posture Status"),
-                    dbc.CardBody([
-                        html.Div(id='posture-status-icon', className="text-center display-1 mb-2"),
-                        html.H3(id='posture-score-text', className="text-center"),
-                        dbc.Progress(id='posture-progress', value=0, striped=True, animated=True, className="mb-3")
-                    ])
-                ], className="h-100")
-            ], width=6),
-        ], className="mb-4"),
-
+            dbc.Col([create_kpi_card("stress-value", "STRESS LEVEL", "stress-color")], lg=3, md=6, className="mb-3"),
+            dbc.Col([create_kpi_card("posture-value", "POSTURE SCORE", "posture-color")], lg=3, md=6, className="mb-3"),
+            dbc.Col([create_kpi_card("sitting-value", "SITTING TIME", "sitting-color")], lg=3, md=6, className="mb-3"),
+            dbc.Col([create_kpi_card("status-value", "STATUS", "status-color")], lg=3, md=6, className="mb-3"),
+        ]),
+        
+        # Charts Row
         dbc.Row([
-            # Middle Left: Daily Sitting Duration
             dbc.Col([
                 dbc.Card([
-                    dbc.CardHeader("Daily Sitting Duration"),
-                    dbc.CardBody([
-                        html.H2(id='sitting-duration-text', className="text-center text-primary"),
-                        dbc.Progress(id='sitting-progress', value=0, max=8, className="mb-2"),
-                        html.Small("Goal: Limit to 6 hours/day", className="text-muted")
-                    ])
-                ], className="h-100")
-            ], width=6),
-
-            # Middle Right: Live Alerts
+                    dbc.CardHeader("STRESS GAUGE"),
+                    dbc.CardBody([dcc.Graph(id='stress-gauge', style={'height': '200px'}, config={'displayModeBar': False})])
+                ])
+            ], lg=4, className="mb-3"),
             dbc.Col([
                 dbc.Card([
-                    dbc.CardHeader("Live Alerts & Coaching"),
-                    dbc.CardBody([
-                        html.Div(id='live-alerts-box', className="alert alert-light border overflow-auto", style={'height': '150px'})
-                    ])
-                ], className="h-100")
-            ], width=6),
-        ], className="mb-4"),
-
+                    dbc.CardHeader("WEEKLY TRENDS"),
+                    dbc.CardBody([dcc.Graph(id='weekly-chart', style={'height': '200px'}, config={'displayModeBar': False})])
+                ])
+            ], lg=8, className="mb-3"),
+        ]),
+        
+        # Alerts & Tips
         dbc.Row([
-            # Bottom Left: Coaching Suggestions
             dbc.Col([
                 dbc.Card([
-                    dbc.CardHeader("Coaching Suggestions"),
-                    dbc.CardBody([
-                        html.Ul(id='coaching-suggestions-list', className="list-group list-group-flush")
-                    ])
-                ], className="h-100")
-            ], width=4),
-
-            # Bottom Right: Weekly Progress
+                    dbc.CardHeader("NOTIFICATIONS"),
+                    dbc.CardBody([html.Div(id='notifications-list', style={'maxHeight': '180px', 'overflowY': 'auto'})])
+                ])
+            ], lg=6, className="mb-3"),
             dbc.Col([
                 dbc.Card([
-                    dbc.CardHeader("Weekly Progress"),
-                    dbc.CardBody([
-                        dcc.Graph(id='weekly-progress-graph', style={'height': '300px'})
-                    ])
-                ], className="h-100")
-            ], width=8),
+                    dbc.CardHeader("RECOMMENDATIONS"),
+                    dbc.CardBody([html.Div(id='recommendations-list', style={'maxHeight': '180px', 'overflowY': 'auto'})])
+                ])
+            ], lg=6, className="mb-3"),
         ])
-    ], fluid=True, className="p-3")
+    ], fluid=True)
+
+def create_kpi_card(value_id, label, color_id):
+    return dbc.Card([
+        dbc.CardBody([
+            html.Div(id=value_id, className="kpi-value"),
+            html.Div(label, className="kpi-label"),
+            html.Div(id=color_id, style={'display': 'none'})
+        ], className="kpi-metric")
+    ])
 
 def register_end_user_callbacks(app):
     @app.callback(
-        [Output('stress-gauge', 'figure'),
-         Output('posture-status-icon', 'children'),
-         Output('posture-score-text', 'children'),
-         Output('posture-progress', 'value'),
-         Output('posture-progress', 'color'),
-         Output('sitting-duration-text', 'children'),
-         Output('sitting-progress', 'value'),
-         Output('live-alerts-box', 'children'),
-         Output('coaching-suggestions-list', 'children'),
-         Output('weekly-progress-graph', 'figure')],
+        [Output('stress-value', 'children'), Output('stress-value', 'className'),
+         Output('posture-value', 'children'), Output('posture-value', 'className'),
+         Output('sitting-value', 'children'), Output('sitting-value', 'className'),
+         Output('status-value', 'children'), Output('status-value', 'className'),
+         Output('stress-gauge', 'figure'), Output('weekly-chart', 'figure'),
+         Output('notifications-list', 'children'), Output('recommendations-list', 'children')],
         [Input('interval-component', 'n_intervals')]
     )
-    def update_end_user_metrics(n):
-        # Fetch latest data
-        recent_data = get_recent_sensor_data(limit=1)
-        if not recent_data:
-            # Return empty/default values if no data
-            empty_gauge = go.Figure(go.Indicator(
-                mode = "gauge+number", value = 0,
-                title = {'text': "Stress"},
-                gauge = {'axis': {'range': [0, 10]}, 'bar': {'color': "gray"}}
-            ))
-            return empty_gauge, "❓", "No Data", 0, "secondary", "0h 0m", 0, "No data available", [], go.Figure()
-
-        latest = recent_data[0]
-        stress = latest.get('stress_level', 0)
-        posture = latest.get('posture_score', 0)
-        timestamp = latest.get('timestamp', datetime.datetime.now())
-
-        # 1. Stress Gauge
-        gauge_color = "green" if stress <= 3 else "yellow" if stress <= 6 else "red"
-        stress_fig = go.Figure(go.Indicator(
-            mode = "gauge+number",
-            value = stress,
-            domain = {'x': [0, 1], 'y': [0, 1]},
-            title = {'text': "Stress Level"},
-            gauge = {
-                'axis': {'range': [0, 10]},
-                'bar': {'color': gauge_color},
-                'steps': [
-                    {'range': [0, 3], 'color': "lightgreen"},
-                    {'range': [3, 7], 'color': "lightyellow"},
-                    {'range': [7, 10], 'color': "salmon"}
-                ],
-            }
-        ))
-        stress_fig.update_layout(margin=dict(l=20, r=20, t=30, b=20))
-
-        # 2. Posture Status
-        posture_icon = "✅" if posture >= 50 else "❌"
-        posture_text = f"Score: {posture}/100"
-        posture_color = "success" if posture >= 80 else "warning" if posture >= 50 else "danger"
-
-        # 3. Sitting Duration (Mock calculation for now, or derived from data)
-        # In a real app, we'd sum up duration from DB. Here we'll mock it or use a simple counter if available.
-        # Let's assume we calculate it from today's data points count * interval (approx)
-        # For now, let's just mock it based on n_intervals for demo purposes or fetch from DB if we had a pre-calc.
-        # We'll fetch today's data count.
-        today_start = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        # This query might be heavy for every 2s, but for prototype it's okay.
-        # Optimization: Cache this or use an aggregate query.
-        # For this implementation, let's just use a placeholder or simple logic.
-        sitting_hours = 4.5 # Mock value
-        sitting_text = f"{sitting_hours} hours"
+    def update_dashboard(n):
+        data = get_recent_sensor_data(limit=1)
         
-        # 4. Live Alerts
-        alerts = []
+        if not data:
+            return ("--", "kpi-value", "--", "kpi-value", "--", "kpi-value", "--", "kpi-value",
+                   create_gauge(0), create_weekly_chart([], [], []), [], [])
+        
+        d = data[0]
+        stress = d.get('stress_level', 0)
+        posture = d.get('posture_score', 0)
+        sitting = 4.5
+        
+        # KPI values and colors
+        stress_class = "kpi-value success" if stress <= 3 else "kpi-value warning" if stress <= 6 else "kpi-value danger"
+        posture_class = "kpi-value success" if posture >= 80 else "kpi-value warning" if posture >= 50 else "kpi-value danger"
+        sitting_class = "kpi-value success" if sitting < 4 else "kpi-value warning" if sitting < 6 else "kpi-value danger"
+        status = "Good" if stress <= 5 and posture >= 60 else "Fair" if stress <= 7 else "Poor"
+        status_class = "kpi-value success" if status == "Good" else "kpi-value warning" if status == "Fair" else "kpi-value danger"
+        
+        # Charts
+        gauge = create_gauge(stress)
+        dates = pd.date_range(end=datetime.datetime.now(), periods=7).strftime('%a').tolist()
+        weekly = create_weekly_chart(dates, [3, 4, 5, 3, 6, 4, stress], [80, 75, 60, 85, 70, 80, posture])
+        
+        # Notifications
+        notifs = []
         if stress > 7:
-            alerts.append(html.Div("⚠️ High Stress Detected! Take a deep breath.", className="text-danger"))
+            notifs.append(create_alert("High stress detected", "Consider taking a break", "critical"))
         if posture < 50:
-            alerts.append(html.Div("⚠️ Poor Posture! Straighten your back.", className="text-warning"))
-        if not alerts:
-            alerts.append(html.Div("✅ All good! Keep it up.", className="text-success"))
-
-        # 5. Coaching Suggestions
-        suggestions = [
-            html.Li("Try to stand up every 30 minutes.", className="list-group-item"),
-            html.Li("Keep your feet flat on the floor.", className="list-group-item"),
-            html.Li("Adjust your screen to eye level.", className="list-group-item")
+            notifs.append(create_alert("Poor posture", "Adjust your seating position", "warning"))
+        if not notifs:
+            notifs.append(create_alert("All metrics normal", "Keep up the good work", "success"))
+        
+        # Recommendations
+        recs = [
+            create_insight("Stand up and stretch every 30 minutes"),
+            create_insight("Keep your monitor at eye level"),
+            create_insight("Maintain proper lumbar support"),
         ]
+        
+        return (f"{stress}/10", stress_class, f"{posture}%", posture_class,
+               f"{sitting}h", sitting_class, status, status_class,
+               gauge, weekly, notifs, recs)
 
-        # 6. Weekly Progress Graph
-        # Fetch last 7 days data
-        # Mocking data for the graph to ensure it looks good if DB is empty
-        dates = pd.date_range(end=datetime.datetime.now(), periods=7).strftime('%Y-%m-%d').tolist()
-        mock_stress = [3, 4, 5, 3, 6, 4, stress]
-        mock_posture = [80, 75, 60, 85, 70, 80, posture]
-        
-        df = pd.DataFrame({
-            "Date": dates,
-            "Stress": mock_stress,
-            "Posture": mock_posture
-        })
-        
-        weekly_fig = go.Figure()
-        weekly_fig.add_trace(go.Scatter(x=df['Date'], y=df['Stress'], name='Stress', yaxis='y'))
-        weekly_fig.add_trace(go.Bar(x=df['Date'], y=df['Posture'], name='Posture', yaxis='y2', opacity=0.5))
-        
-        weekly_fig.update_layout(
-            title="Weekly Trends",
-            yaxis=dict(title="Stress (0-10)", range=[0, 10]),
-            yaxis2=dict(title="Posture (0-100)", range=[0, 100], overlaying='y', side='right'),
-            legend=dict(x=0, y=1.1, orientation='h'),
-            margin=dict(l=40, r=40, t=40, b=40)
-        )
+def create_gauge(value):
+    color = COLORS['green'] if value <= 3 else COLORS['orange'] if value <= 6 else COLORS['red']
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=value,
+        number={'font': {'size': 36, 'color': '#333'}},
+        gauge={
+            'axis': {'range': [0, 10], 'tickwidth': 1, 'tickcolor': '#ddd'},
+            'bar': {'color': color, 'thickness': 0.6},
+            'bgcolor': '#f0f0f0',
+            'steps': [
+                {'range': [0, 3], 'color': 'rgba(89,161,79,0.1)'},
+                {'range': [3, 7], 'color': 'rgba(242,142,44,0.1)'},
+                {'range': [7, 10], 'color': 'rgba(225,87,89,0.1)'}
+            ]
+        }
+    ))
+    fig.update_layout(**LAYOUT)
+    return fig
 
-        return (stress_fig, posture_icon, posture_text, posture, posture_color, 
-                sitting_text, sitting_hours, alerts, suggestions, weekly_fig)
+def create_weekly_chart(dates, stress, posture):
+    fig = go.Figure()
+    if dates:
+        fig.add_trace(go.Bar(x=dates, y=posture, name='Posture', marker_color=COLORS['blue'], opacity=0.7, yaxis='y2'))
+        fig.add_trace(go.Scatter(x=dates, y=stress, name='Stress', line={'color': COLORS['red'], 'width': 2}, mode='lines+markers'))
+    fig.update_layout(**LAYOUT, showlegend=True, legend={'orientation': 'h', 'y': 1.1, 'x': 0, 'font': {'size': 10}},
+                     yaxis={'title': 'Stress', 'range': [0, 10], 'gridcolor': '#eee'},
+                     yaxis2={'title': 'Posture', 'range': [0, 100], 'overlaying': 'y', 'side': 'right'},
+                     xaxis={'gridcolor': '#eee'}, bargap=0.3)
+    return fig
+
+def create_alert(title, desc, level):
+    return html.Div([
+        html.Div(title, className="alert-title"),
+        html.Div(desc, className="alert-desc")
+    ], className=f"alert-item {level}")
+
+def create_insight(text):
+    return html.Div(text, className="insight-item")
