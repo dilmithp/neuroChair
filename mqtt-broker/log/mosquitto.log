@@ -85,3 +85,6 @@
 1764997705: New client connected from 172.20.0.4:57185 as auto-E2F5815D-0E1E-3485-01C9-4088C6C7560A (p2, c1, k60).
 1764997761: New connection from 192.168.65.1:26371 on port 1883.
 1764997761: New client connected from 192.168.65.1:26371 as auto-36B96158-0EE0-6FF3-2B66-AB5949697853 (p2, c1, k60).
+1764998867: Client auto-E2F5815D-0E1E-3485-01C9-4088C6C7560A closed its connection.
+1764998868: New connection from 172.20.0.4:34119 on port 1883.
+1764998868: New client connected from 172.20.0.4:34119 as auto-12602669-3A49-51EC-0A5B-5F6C8F312D57 (p2, c1, k60).
