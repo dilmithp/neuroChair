@@ -123,11 +123,22 @@ def manage_login(login_clicks, logout_clicks, username, password, current_path):
     
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
     
+    # Debug logging
+    print(f"DEBUG: button_id={button_id}, username='{username}', password='{password}'")
+    
     if button_id == 'login-btn':
-        if username == 'U01' and password == '1234':  # Hardcoded Demo User
+        # Strip whitespace and handle None
+        user = (username or "").strip()
+        pwd = (password or "").strip()
+        
+        print(f"DEBUG: Comparing user='{user}' with 'U01', pwd='{pwd}' with '1234'")
+        
+        if user == 'U01' and pwd == '1234':  # Hardcoded Demo User
+            print("DEBUG: Login successful!")
             return '/dashboard', {'user': 'U01', 'role': 'user'}, ""
         else:
-            return dash.no_update, dash.no_update, dbc.Alert("Invalid credentials", color="danger")
+            print(f"DEBUG: Login failed - user match: {user == 'U01'}, pwd match: {pwd == '1234'}")
+            return dash.no_update, dash.no_update, dbc.Alert(f"Invalid credentials (received: '{user}')", color="danger")
             
     elif button_id == 'logout-btn':
         return '/login', None, ""
