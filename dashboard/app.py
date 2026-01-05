@@ -100,48 +100,58 @@ def dashboard_layout():
         dcc.Interval(id='interval-component', interval=2000, n_intervals=0)
     ], fluid=True, className="p-3")
 
-# App Root Layout
+# App Root Layout - with hidden fallback inputs for State
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     dcc.Store(id='session-store', storage_type='session'),  # Stores user session
-    html.Div(id='page-content')
+    html.Div(id='page-content'),
+    # Hidden fallback inputs (used as State source when on dashboard)
+    html.Div([
+        dbc.Input(id="username-box-fallback", style={"display": "none"}),
+        dbc.Input(id="password-box-fallback", style={"display": "none"}),
+    ], style={"display": "none"})
 ])
 
-# Callbacks
+# Login Callback - only active on login page where username-box exists
 @app.callback(
-    [Output('url', 'pathname'), Output('session-store', 'data'), Output('login-alert', 'children')],
-    [Input('login-btn', 'n_clicks'), Input('logout-btn', 'n_clicks')],
-    [State('username-box', 'value'), State('password-box', 'value'), State('url', 'pathname')],
+    [Output('url', 'pathname', allow_duplicate=True), 
+     Output('session-store', 'data', allow_duplicate=True), 
+     Output('login-alert', 'children')],
+    [Input('login-btn', 'n_clicks')],
+    [State('username-box', 'value'), State('password-box', 'value')],
     prevent_initial_call=True
 )
-def manage_login(login_clicks, logout_clicks, username, password, current_path):
-    ctx = callback_context
-    if not ctx.triggered:
-        return current_path, dash.no_update, ""
-    
-    button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+def handle_login(login_clicks, username, password):
+    if not login_clicks:
+        return dash.no_update, dash.no_update, ""
     
     # Debug logging
-    print(f"DEBUG: button_id={button_id}, username='{username}', password='{password}'")
+    print(f"DEBUG LOGIN: username='{username}', password='{password}'")
     
-    if button_id == 'login-btn':
-        # Strip whitespace and handle None
-        user = (username or "").strip()
-        pwd = (password or "").strip()
-        
-        print(f"DEBUG: Comparing user='{user}' with 'U01', pwd='{pwd}' with '1234'")
-        
-        if user == 'U01' and pwd == '1234':  # Hardcoded Demo User
-            print("DEBUG: Login successful!")
-            return '/dashboard', {'user': 'U01', 'role': 'user'}, ""
-        else:
-            print(f"DEBUG: Login failed - user match: {user == 'U01'}, pwd match: {pwd == '1234'}")
-            return dash.no_update, dash.no_update, dbc.Alert(f"Invalid credentials (received: '{user}')", color="danger")
-            
-    elif button_id == 'logout-btn':
-        return '/login', None, ""
+    # Strip whitespace and handle None
+    user = (username or "").strip()
+    pwd = (password or "").strip()
     
-    return current_path, dash.no_update, ""
+    if user == 'U01' and pwd == '1234':  # Hardcoded Demo User
+        print("DEBUG: Login successful!")
+        return '/dashboard', {'user': 'U01', 'role': 'user'}, ""
+    else:
+        print(f"DEBUG: Login failed")
+        return dash.no_update, dash.no_update, dbc.Alert(f"Invalid credentials", color="danger")
+
+# Logout Callback - only needs the button, no State required
+@app.callback(
+    [Output('url', 'pathname', allow_duplicate=True), 
+     Output('session-store', 'data', allow_duplicate=True)],
+    [Input('logout-btn', 'n_clicks')],
+    prevent_initial_call=True
+)
+def handle_logout(logout_clicks):
+    if not logout_clicks:
+        return dash.no_update, dash.no_update
+    
+    print("DEBUG: Logout clicked!")
+    return '/login', None
 
 @app.callback(Output('page-content', 'children'), [Input('url', 'pathname'), Input('session-store', 'data')])
 def display_page(pathname, session_data):
