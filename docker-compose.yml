@@ -49,6 +49,8 @@ services:
       - backend
     environment:
       - MONGO_URI=mongodb://mongodb:27017/neurochair
+    volumes:
+      - ./Datasets:/app/Datasets
     networks:
       - neurochair-network
 
