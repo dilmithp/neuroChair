@@ -2,24 +2,29 @@ import pandas as pd
 import os
 import numpy as np
 
-# Path to datasets
+# Path to datasets - cross-platform detection
+# Get the directory where this file is located
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)  # Go up one level from dashboard/
+
 # Try to find Datasets in common locations
 possible_paths = [
+    os.path.join(PROJECT_ROOT, "Datasets"),  # Project root/Datasets (most reliable)
     "/app/Datasets",  # Docker
-    "../Datasets",    # Local dev (from dashboard dir)
-    "Datasets",       # Local dev (from root)
-    "/Volumes/128GB/Projects/neurochair-cloud/Datasets" # Absolute backup
+    os.path.join(SCRIPT_DIR, "..", "Datasets"),  # Relative from dashboard
+    "Datasets",  # Current working directory
 ]
 
 DATASET_PATH = None
 for p in possible_paths:
     if os.path.exists(p):
         DATASET_PATH = p
+        print(f"Found Datasets at: {p}")
         break
 
 if DATASET_PATH is None:
-    print("Warning: Datasets folder not found!")
-    DATASET_PATH = "Datasets" # Default
+    print(f"Warning: Datasets folder not found! Checked: {possible_paths}")
+    DATASET_PATH = os.path.join(PROJECT_ROOT, "Datasets")  # Default
 
 def load_user_data(user_id="U01"):
     """
