@@ -85,3 +85,26 @@
 1764997705: New client connected from 172.20.0.4:57185 as auto-E2F5815D-0E1E-3485-01C9-4088C6C7560A (p2, c1, k60).
 1764997761: New connection from 192.168.65.1:26371 on port 1883.
 1764997761: New client connected from 192.168.65.1:26371 as auto-36B96158-0EE0-6FF3-2B66-AB5949697853 (p2, c1, k60).
+1767538724: mosquitto version 2.0.22 starting
+1767538724: Config loaded from /mosquitto/config/mosquitto.conf.
+1767538724: Opening ipv4 listen socket on port 1883.
+1767538724: Opening ipv6 listen socket on port 1883.
+1767538724: mosquitto version 2.0.22 running
+1767538724: New connection from 172.21.0.4:60971 on port 1883.
+1767538724: New client connected from 172.21.0.4:60971 as auto-3B4BBFD2-727F-454F-8354-D78C67A54EF9 (p2, c1, k60).
+1767538738: New connection from 192.168.65.1:24351 on port 1883.
+1767538738: New client connected from 192.168.65.1:24351 as auto-E8EA7090-A608-BB32-3DD7-EAFDE96CF727 (p2, c1, k60).
+1767541380: mosquitto version 2.0.22 starting
+1767541380: Config loaded from /mosquitto/config/mosquitto.conf.
+1767541380: Opening ipv4 listen socket on port 1883.
+1767541380: Opening ipv6 listen socket on port 1883.
+1767541380: mosquitto version 2.0.22 running
+1767541381: New connection from 172.21.0.4:59021 on port 1883.
+1767541381: New client connected from 172.21.0.4:59021 as auto-4C95384D-189E-DEC3-26DC-0B00635C1771 (p2, c1, k60).
+1767569482: mosquitto version 2.0.22 starting
+1767569482: Config loaded from /mosquitto/config/mosquitto.conf.
+1767569482: Opening ipv4 listen socket on port 1883.
+1767569482: Opening ipv6 listen socket on port 1883.
+1767569482: mosquitto version 2.0.22 running
+1767569483: New connection from 172.21.0.4:45421 on port 1883.
+1767569483: New client connected from 172.21.0.4:45421 as auto-E3FC7563-B314-5A1F-10F0-5E74FA5AD26D (p2, c1, k60).
