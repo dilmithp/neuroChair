@@ -56,10 +56,10 @@ login_layout = dbc.Container([
                         html.P("Please sign in to continue", className="text-center text-muted mb-4"),
                         
                         dbc.Label("Username"),
-                        dbc.Input(id="username-box", type="text", placeholder="Enter username", className="mb-3", value=""),
+                        dbc.Input(id="username-box", type="text", placeholder="Enter username", className="mb-3"),
                         
                         dbc.Label("Password"),
-                        dbc.Input(id="password-box", type="password", placeholder="Enter password", className="mb-3", value=""),
+                        dbc.Input(id="password-box", type="password", placeholder="Enter password", className="mb-3"),
                         
                         dbc.Button("Login", id="login-btn", color="primary", className="w-100", n_clicks=0),
                         html.Div(id="login-alert", className="mt-3"),
@@ -92,12 +92,10 @@ def dashboard_layout():
             ])
         ], className="dashboard-footer"),
         
-        # Hidden login button to prevent callback errors on dashboard page
+        # Hidden elements to prevent callback errors on dashboard page
+        # Note: username-box and password-box are NOT included here to avoid ID collision
         dbc.Button(id="login-btn", style={"display": "none"}, n_clicks=0),
         html.Div(id="login-alert", style={"display": "none"}),
-        # Hidden inputs for callback state
-        dbc.Input(id="username-box", style={"display": "none"}, value=""),
-        dbc.Input(id="password-box", style={"display": "none"}, value=""),
         
         dcc.Interval(id='interval-component', interval=2000, n_intervals=0)
     ], fluid=True, className="p-3")
