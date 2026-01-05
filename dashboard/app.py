@@ -51,21 +51,21 @@ login_layout = dbc.Container([
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
-                    html.Form([
+                    html.Div([
                         html.H2("NeuroChair", className="text-center mb-4", style={'color': '#4e79a7', 'fontWeight': '600'}),
                         html.P("Please sign in to continue", className="text-center text-muted mb-4"),
                         
                         dbc.Label("Username"),
-                        dbc.Input(id="username-box", type="text", placeholder="Enter username", className="mb-3"),
+                        dbc.Input(id="username-box", type="text", placeholder="Enter username", className="mb-3", value=""),
                         
                         dbc.Label("Password"),
-                        dbc.Input(id="password-box", type="password", placeholder="Enter password", className="mb-3"),
+                        dbc.Input(id="password-box", type="password", placeholder="Enter password", className="mb-3", value=""),
                         
                         dbc.Button("Login", id="login-btn", color="primary", className="w-100", n_clicks=0),
                         html.Div(id="login-alert", className="mt-3"),
                         # Hidden logout button to prevent callback errors
                         dbc.Button(id="logout-btn", style={"display": "none"}, n_clicks=0)
-                    ], id="login-form", **{"data-prevent-default": "true"})
+                    ])
                 ])
             ], className="shadow-sm border-0", style={'maxWidth': '400px', 'margin': '0 auto'})
         ], width=12, className="d-flex align-items-center justify-content-center", style={'minHeight': '100vh'})
@@ -96,8 +96,8 @@ def dashboard_layout():
         dbc.Button(id="login-btn", style={"display": "none"}, n_clicks=0),
         html.Div(id="login-alert", style={"display": "none"}),
         # Hidden inputs for callback state
-        dbc.Input(id="username-box", style={"display": "none"}),
-        dbc.Input(id="password-box", style={"display": "none"}),
+        dbc.Input(id="username-box", style={"display": "none"}, value=""),
+        dbc.Input(id="password-box", style={"display": "none"}, value=""),
         
         dcc.Interval(id='interval-component', interval=2000, n_intervals=0)
     ], fluid=True, className="p-3")
